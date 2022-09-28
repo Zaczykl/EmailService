@@ -1,0 +1,28 @@
+﻿@{
+    ViewBag.Title = "Strona główna";
+}
+
+
+<button class="btn btn-primary"
+        onclick='window.location.href="@Url.Action("CreateEmail", "Home")"'>
+    Utwórz
+</button>
+
+@if (TempData["MailSentMessage"] != null)
+{
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script type="text/javascript">
+        alert('@TempData["MailSentMessage"]');
+
+       $.ajax({
+                type: "POST",
+                url: '/Home/SetTempData',
+                data: '{ value: null}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "text",
+                success: function (r) {
+                    window.location = window.location.href;
+                }
+            });
+    </script>
+}

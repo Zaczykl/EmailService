@@ -1,0 +1,85 @@
+﻿@model MailSender.Models.ViewModels.CreateEmailViewModel
+@{
+    ViewBag.Title = "Utwórz wiadomość";
+}
+<p class="alert alert-info mt-4 mb-4">
+    Pola tytuł, adres odbiorcy, treść są <strong>wymagane</strong>.
+</p>
+@using (@Html.BeginForm("CreateEmail", "Home", FormMethod.Post, new { @enctype = "multipart/form-data" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary()
+    @Html.HiddenFor(x => x.Email.Id)
+    @Html.HiddenFor(x => x.Email.UserId)
+    @Html.HiddenFor(x => x.Email.Receiver.UserId)
+
+    <div class="row">
+        <div class="col-6">
+            @Html.LabelFor(x => x.Email.Message)
+            @Html.TextAreaFor(model => model.Email.Message, 10, 40, htmlAttributes: new { style = "width: 100%; max-width: 100%;" })
+        </div>
+        <div class="col-5 offset-1">
+            <div class="mb-3">
+                @Html.LabelFor(x => x.Email.Title)
+                @Html.TextBoxFor(x => x.Email.Title, new { @class = "form-control" })
+            </div>
+
+            @if (Model.Receivers != null && Model.Receivers.Any())
+            {
+                <div id="receiverSelectlistContainer">
+                    <div id="ReceiverSelectList" class="mb-3">
+                        @Html.LabelFor(x => x.Email.Receiver.Email)
+                        @Html.DropDownListFor(x => x.Email.Receiver.Email, new SelectList(Model.Receivers, "Email", "Email"), "-- Wybierz odbiorcę z listy --", new { @class = "form-control", @onchange = "onChangeReceiverSelectlist(this.value)" })
+                    </div>
+                </div>
+            }
+            <div id="receiverTextBoxContainer">
+                <div id="ReceiverTextbox" class="mb-3">
+                    @Html.LabelFor(x => x.Email.Receiver.Email)
+                    @Html.TextBoxFor(x => x.Email.Receiver.Email, new { @class = "form-control", @onchange = "onChangeReceiverTextbox(this.value)" })
+                </div>
+            </div>
+            <div class="mb-3">
+                @Html.LabelFor(x => x.Pattern.SenderName)
+                @Html.TextBoxFor(x => x.Pattern.SenderName, new { Value = @Model.Pattern.SenderName, @class = "form-control" })
+            </div>
+            <div class="mb-3">
+                @Html.LabelFor(x => x.File)
+                @Html.TextBoxFor(x => x.File, new { type = "file", @class = "form-control" })
+                @Html.ValidationMessageFor(x => x.File)
+            </div>
+        </div>
+        <div class="row">
+            <div class="d-flex justify-content-center">
+                <button type="submit" class="btn btn-primary btn-lg mt-5 mb-5">
+                    Wyślij
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+@section scripts
+        {
+    <script type="text/javascript">
+
+        function onChangeReceiverSelectlist(val) {
+            if (val) {
+                $holder = $("#ReceiverTextbox").detach();
+            }
+            else {
+                $("#receiverTextBoxContainer").append($holder);
+            }
+        }
+
+        function onChangeReceiverTextbox(val) {
+            if (val) {
+                $holder = $("#ReceiverSelectList").detach();
+            }
+            else {
+                $("#receiverSelectlistContainer").append($holder);
+            }
+        }
+    </script>
+}
